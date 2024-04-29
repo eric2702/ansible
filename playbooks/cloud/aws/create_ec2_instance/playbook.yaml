@@ -1,0 +1,36 @@
+- hosts: localhost
+  connection: local
+  gather_facts: False
+
+  vars:
+    instance_name: "{{ instance_name }}"
+    key_name: "{{ key_name }}"           # Key used for SSH
+    region: "{{ region }}"
+    image: "{{ image }}"
+    instance_type: "{{ instance_type }}"
+    sec_group: "{{ sec_group }}"
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+
+  tasks:
+    - name: Provisioning EC2 instances
+      ec2_instance:
+        name: "{{ instance_name }}"
+        key_name: "{{ key_name }}"
+        instance_type: "{{ instance_type }}"
+        image_id: "{{ image }}"
+        security_group: "{{ sec_group }}"
+        region: "{{ region }}"
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        state: present
+        wait: true
+      register: ec2
+      tags:
+        - create
+        - info
+    - name: information
+      debug:
+        msg: "{{ item.public_ip_address }}"
+      loop: "{{ ec2.instances }}"
+      tags: info
