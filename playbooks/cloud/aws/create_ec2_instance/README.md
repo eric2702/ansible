@@ -1,5 +1,3 @@
-pip install -r requirements.txt
-
 ansible-vault encrypt .env
 
 ansible-playbook -e @.env playbook.yaml --tags create --ask-vault-pass
