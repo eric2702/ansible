@@ -1,0 +1,20 @@
+- hosts: localhost
+  gather_facts: False
+  tasks:
+    - name: Fetch EC2 facts
+      amazon.aws.ec2_instance_info:
+        region: ap-southeast-1
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+      register: ec2_facts
+
+    - name: Create hosts.ini file
+      copy:
+        content: |
+          [all]
+          {% for instance in ec2_facts.instances %}
+          {% if instance.public_ip_address is defined %}
+          {{ instance.public_ip_address }}
+          {% endif %}
+          {% endfor %}
+        dest: hosts.ini
