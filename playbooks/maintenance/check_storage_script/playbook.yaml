@@ -1,0 +1,21 @@
+- name: Deploy check storage script
+  hosts: all
+  become: true # This line enables privilege escalation
+  become_user: root # This specifies the user to become (in this case, 'root')
+  become_method: sudo
+  tasks:
+    - name: Create check storage file
+      copy:
+        content: "{{ file_content }}"
+        dest: /root/check_storage.sh
+
+    - name: Set permissions for check storage file
+      file:
+        path: /root/check_storage.sh
+        mode: "u=rwx,g=rx,o=rx"
+    - name: Add cron job
+      cron:
+        name: "Run check storage script every hour"
+        minute: "0"
+        hour: "*"
+        job: "/root/check_storage.sh"
